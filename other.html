@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="flex items-center justify-center" style="background: #edf2f7;">
+    <div class="h-100 w-full flex items-center justify-center bg-teal-lightest font-sans" id="todo-list-example">
+    	<div class="bg-white rounded shadow p-6 m-4 w-full lg:w-3/4 lg:max-w-lg">
+            <div class="mb-4">
+                <h1 class="text-grey-darkest text-xs italic">Todo List</h1>
+                <div class="flex mt-4">
+                    <form v-on:submit.prevent="addNewTodo">
+                        <input class="shadow appearance-none border rounded py-2 px-3 mr-4 text-grey-darker text-xs italic" v-model="newTodoText" id="new-todo" @input="checkError" placeholder="Add Todo">
+                        <button class="flex-no-shrink py-2 px-3 mr-4 border-2 rounded text-teal border-teal text-xs italic">Add</button>
+                  </form>
+                </div>
+            </div>
+            <div>
+                <ul>
+                    <todo-item
+                      v-for="(todo, index) in todos"
+                      :key="todo.id"
+                      :title="todo.title"
+                      v-on:remove="todos.splice(index, 1)"
+                      class="text-xs italic"
+                    ></todo-item>
+                </ul>
+            </div>
+
+            <div v-if="error.length">
+              <p class="text-red-500 text-xs italic">Please enter a value!</p>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script>
+        Vue.component('todo-item', {
+          template: '\
+            <li>\
+              {{ title }}\
+              &nbsp;\
+              &nbsp;\
+              <button class="flex-no-shrink py-2 px-3 mr-4 border-2 rounded text-teal border-teal text-xs italic" v-on:click="$emit(\'remove\')">Remove</button>\
+            </li>\
+          ',
+          props: ['title']
+        })
+
+        new Vue({
+          el: '#todo-list-example',
+          data: {
+            error: 'true',
+            newTodoText: '',
+            todos: [
+              /*
+                {
+                  id: 1,
+                  title: 'Faire la vaisselle',
+                },
+                {
+                  id: 2,
+                  title: 'Sortir les poubelles',
+                },
+                {
+                  id: 3,
+                  title: 'Tondre la pelouse'
+                }
+              */
+            ],
+            nextTodoId: 4
+          },
+          methods: {
+            addNewTodo: function () {
+              if(this.newTodoText.length > 0) {
+                this.todos.push({
+                  id: this.nextTodoId++,
+                  title: this.newTodoText
+                })
+                this.newTodoText = ''
+                this.error = ''
+              } else {
+                this.error = 'Please enter a value!'
+              }
+            },
+            checkError: function() {
+              if(this.newTodoText.length > 0) {
+                this.error = ''
+              } else {
+                this.error = 'Please enter a value!'
+              }
+            }
+          }
+        })
+    </script>
+</body>
+</html>
